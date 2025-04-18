@@ -46,26 +46,18 @@ const data = [
   },
 ];
 
-// Рассчитываем z-score для каждой точки данных
 const calculateZScores = (data, key) => {
-  // Вычисляем среднее значение
   const sum = data.reduce((acc, item) => acc + item[key], 0);
   const mean = sum / data.length;
   
-  // Вычисляем стандартное отклонение
   const sumSquaredDiff = data.reduce((acc, item) => {
     const diff = item[key] - mean;
     return acc + diff * diff;
   }, 0);
   const stdDev = Math.sqrt(sumSquaredDiff / data.length);
-
-  console.log(`Для ряда ${key}: Среднее = ${mean}, Стандартное отклонение = ${stdDev}`);
   
-  // Рассчитываем z-score для каждой точки
   const dataWithZScores = data.map(item => {
     const zScore = (item[key] - mean) / stdDev;
-    console.log(`${item.name}, ${key} = ${item[key]}, z-score = ${zScore}, |z-score| ${Math.abs(zScore)} > 1: ${Math.abs(zScore) > 1}`);
-    
     return {
       ...item,
       [`${key}ZScore`]: zScore,
@@ -76,12 +68,10 @@ const calculateZScores = (data, key) => {
   return dataWithZScores;
 };
 
-// Расчет z-score для различных рядов данных
 const enrichedData = data.map(item => ({ ...item }));
 const dataWithPvZScores = calculateZScores(enrichedData, 'pv');
 const dataWithZScores = calculateZScores(dataWithPvZScores, 'uv');
 
-// Компонент для создания сегментированных линий с разными цветами
 const CustomizedLine = (props) => {
   const { points, dataKey, stroke } = props;
   
@@ -114,7 +104,6 @@ const CustomizedLine = (props) => {
   return <g>{segments}</g>;
 };
 
-// Компонент для создания точек с разными цветами
 const CustomizedDot = (props) => {
   const { cx, cy, dataKey, payload, stroke } = props;
   
@@ -168,16 +157,15 @@ export default class Example extends PureComponent {
             stroke="#8884d8" 
             activeDot={{ r: 8 }}
             dot={<CustomizedDot />}
-            strokeWidth={0} // Скрываем оригинальную линию
+            strokeWidth={0}
           />
           <Line 
             type="monotone" 
             dataKey="uv" 
             stroke="#82ca9d"
             dot={<CustomizedDot />}
-            strokeWidth={0} // Скрываем оригинальную линию
+            strokeWidth={0}
           />
-          {/* Добавляем свои сегментированные линии */}
           <Line 
             type="monotone" 
             dataKey="pv" 
